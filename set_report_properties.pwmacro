@@ -1,0 +1,97 @@
+version "5.0"
+#========================================================
+# ---- InnovMetric Software Inc.
+# ---- Module  :    PolyWorks|Inspector
+# ---- Version :    2018 IR3.1 (build 4226)
+# ---- Date    :    Wednesday, August 15, 2018 - 10:14:31
+#--------------------------------------------------------
+
+# Created by Kyle Johnston on 2018-08-15
+# Last update: 2019-02-04
+
+# Sets report properties
+# Report title is set to Inspector project name
+
+
+# Set permanent values
+# >>> You CAN edit the following lines <<<
+DECLARE user_name "YOUR NAME"
+DECLARE user_email "YOUR EMAIL"
+DECLARE product_line "YOUR PRODUCT LINE"
+
+# Reset permanent values not defined
+# >>> Do NOT edit the following lines <<<
+IF $user_name == "YOUR NAME"
+    SET user_name ""
+ENDIF
+IF $user_email == "YOUR EMAIL"
+    SET user_email ""
+ENDIF
+IF $product_line == "YOUR PRODUCT LINE"
+    SET product_line ""
+ENDIF
+
+# Acquire info from user
+MACRO INPUT MULTIPLE_PARAMETERS ( "Report properties", "Enter report properties", \
+    {"string", "User name", $user_name, \
+    "string", "User email", $user_email, \
+    "string", "Product line", $product_line}, \
+    user_name, user_email, product_line )
+
+# If input is cancelled, end macro
+IF $user_name == ""
+    IF $user_email == ""
+        IF $product_line == ""
+            IF $user_email == ""
+                MACRO ECHO ( "EXIT: Macro cancelled by user" )
+                MACRO END ( "No Error" )
+            ENDIF
+        ENDIF
+    ENDIF
+ENDIF
+
+# Acquire info from project and system
+DECLARE title
+PROJECT PROPERTIES NAME GET ( title )
+DECLARE year
+DECLARE month
+DECLARE day
+SYSTEM DATE_TIME GET ( year, month, day )
+
+# Create date with leading zeros for month/day if single digit
+DECLARE date
+IF $month < 10
+    IF $day < 10
+	    SET date "$year-0$month-0$day"
+    ELSE
+	    SET date "$year-0$month-$day"
+	ENDIF
+ELSE
+    IF $day < 10
+	    SET date "$year-$month-0$day"
+    ELSE
+	    SET date "$year-$month-$day"
+	ENDIF
+ENDIF
+
+# Set properties
+DECLARE report_name
+TREEVIEW FORMATTED_REPORT NAME GET ( 1, report_name )
+FORMATTED_REPORT PROPERTIES STANDARD ( $report_name, "Title", "$title" )
+FORMATTED_REPORT PROPERTIES STANDARD ( $report_name, "Author", $user_name )
+FORMATTED_REPORT PROPERTIES CUSTOM ( $report_name, "Author Email", $user_email )
+FORMATTED_REPORT PROPERTIES CUSTOM ( $report_name, "Product Line", $product_line )
+FORMATTED_REPORT PROPERTIES CUSTOM ( $report_name, "Report Date", $date )
+FORMATTED_REPORT PROPERTIES CUSTOM ( $report_name, "Report Revision", "0" )
+FORMATTED_REPORT PROPERTIES CUSTOM ( $report_name, "Unit", "inch" )
+
+# Report results to user
+MACRO PAUSE ( "Marco complete", \
+    "For ${report_name}:", \
+    "Title --> ${title}", \
+    "Author --> ${user_name}", \
+    "Author Email --> ${user_email}", \
+    "Product Line --> ${product_line}", \
+    "Report Date --> ${date}", \
+    "Report Revision --> 0", \
+    "Unit --> inch" )

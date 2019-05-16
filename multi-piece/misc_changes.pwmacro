@@ -1,0 +1,27 @@
+version "5.0"
+#========================================================
+# ---- InnovMetric Software Inc.
+# ---- Module  :    PolyWorks|Inspector
+# ---- Version :    2018 IR6 (build 5240)
+# ---- Date    :    Thursday, December 6, 2018 - 11:29:23
+#--------------------------------------------------------
+
+# Created by Kyle Johnston on 2019-01-11
+# Last update: 2019-01-15
+
+DECLARE piece_names
+PIECE NAME ALL GET ( piece_names )
+
+DECLARE i 1
+# SIZE ( piece_names )
+WHILE $i <= SIZE ( piece_names )
+
+    # Open piece
+    PIECE OPEN ( $piece_names[${i}] )
+
+    # INSERT COMMANDS HERE
+
+    # Increase i before looking to do next file
+    ++i
+
+ENDWHILE

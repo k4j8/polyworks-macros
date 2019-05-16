@@ -1,0 +1,51 @@
+version "5.0"
+#========================================================
+# ---- InnovMetric Software Inc.
+# ---- Module  :    PolyWorks|Inspector
+# ---- Version :    2018 IR6 (build 5240)
+# ---- Date    :    Thursday, December 6, 2018 - 11:29:23
+#--------------------------------------------------------
+
+# Created by Kyle Johnston on 2018-12-06
+# Last update: 2019-01-08
+
+# Creates and exports STL files for each piece
+
+
+DECLARE workspace_path
+MACRO SHARED_VARIABLE GET_VALUE ( "workspace_path", workspace_path )
+
+# Select location to save STL files
+DECLARE save_dir
+MACRO INPUT FOLDER_PATH ( save_dir, "Select location to save STL files" , "$workspace_path:h\STL Data and Setup Pictures" )
+IF $save_dir == "0"
+    MACRO ECHO ( "EXIT: No save path provided by user." )
+    MACRO END ( )
+ENDIF
+
+
+# Export each STL
+
+DECLARE piece_names
+PIECE NAME ALL GET ( piece_names )
+
+DECLARE i 1
+DECLARE scan_data
+WHILE $i <= SIZE ( piece_names )
+    
+    # Open piece
+    PIECE OPEN ( $piece_names[${i}] )
+    
+    # Get scan data, optional if create polygonal model does not require name
+    TREEVIEW DATA NAME GET ( 1, scan_data )
+    
+    # Create polygonal model
+    DATA POLYGONAL_MODEL CREATE WRAP_MESH_AROUND_POINT_CLOUDS ( $scan_data, )
+    
+    # Export STL
+    FILE EXPORT_OBJECT POLYGONAL_MODEL ( "${save_dir}\$piece_names[${i}].stl", "stl", )
+    
+    # Increase i before looking to do next file
+    ++i
+
+ENDWHILE

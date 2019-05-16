@@ -1,0 +1,66 @@
+version "5.0"
+#========================================================
+# ---- InnovMetric Software Inc.
+# ---- Module  :    PolyWorks|Inspector
+# ---- Version :    2018 IR6 (build 5240)
+# ---- Date    :    Thursday, December 6, 2018 - 11:29:23
+#--------------------------------------------------------
+
+# Created by Kyle Johnston on 2019-01-11
+# Last update: 2019-05-09
+
+# Exports PDF reports for a specified number of pieces and names them by piece name
+
+
+# Get number of reports to save from user
+DECLARE number_of_reports
+MACRO INPUT INTEGER ( number_of_reports, "Enter number of reports", "Enter the number of reports to export, starting from the most recent. Enter 0 to export all reports.", 0 )
+
+# Get where to save reports from user
+DECLARE save_dir
+DECLARE workspace_path
+MACRO INPUT FOLDER_PATH ( save_dir, "Select location to save reports" , "$workspace_path:h\PDF Reports" )
+IF $save_dir == "0"
+    MACRO ECHO ( "EXIT: No save path provided by user." )
+    MACRO END ( "No Error" )
+ENDIF
+
+# Get list of pieces
+DECLARE piece_names
+PIECE NAME ALL GET ( piece_names )
+
+# Calculate first report to import
+DECLARE i
+IF $number_of_reports == 0
+    SET i 1
+ELSE
+    SET i EXPR ( SIZE ( piece_names ) - $number_of_reports + 1 )
+ENDIF
+IF $i <= 0
+    MACRO PAUSE ( "Error", "Invalid number of reports entered. Must be a positive integer and no greater than the maximum number of pieces." )
+    MACRO END ( "Error" )
+ENDIF
+
+DECLARE report_name
+DECLARE export_counter 0
+WHILE $i <= SIZE ( piece_names )
+
+    # Open piece
+    PIECE OPEN ( $piece_names[${i}] )
+
+    # Export PDF report
+    MACRO SHARED_VARIABLE GET_VALUE ( "workspace_path", workspace_path )
+    TREEVIEW FORMATTED_REPORT NAME GET ( 1, report_name )
+    IF report_name == "0"
+        MACRO PAUSE ( "Error", "Report not found. Report must be present in each piece before running macro." )
+        MACRO END ( "Error" )
+    ENDIF
+    FILE EXPORT_FORMATTED_REPORT PDF ( "${save_dir}\${piece_names[${i}]:r}.pdf", "Off", $report_name )
+
+    # Increase i and export_counter before next piece
+    ++i
+    ++export_counter
+
+ENDWHILE
+
+MACRO PAUSE ( "Macro complete", "Saved ${export_counter} reports in ${save_dir}." )

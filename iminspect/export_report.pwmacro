@@ -1,0 +1,39 @@
+version "5.0"
+#=========================================================
+# ---- InnovMetric Software Inc.
+# ---- Module  :    PolyWorks|Inspector
+# ---- Version :    2018 IR6 (build 5240)
+# ---- Date    :    Thursday, December 20, 2018 - 10:42:22
+#---------------------------------------------------------
+
+# Created by Kyle Johnston on 2018-12-20
+# Last update: 2019-05-09
+
+# Exports report to "PDF Reports" folder or user specified location if not found
+
+
+DECLARE workspace_path
+DECLARE scan_name
+DECLARE report_name
+DECLARE save_dir_found
+
+MACRO SHARED_VARIABLE GET_VALUE ( "workspace_path", workspace_path )
+TREEVIEW DATA NAME GET ( 1, scan_name )
+TREEVIEW FORMATTED_REPORT NAME GET ( 1, report_name )
+IF report_name == "0"
+    MACRO PAUSE ( "Error", "Report not found. Report must be present in each piece before running macro." )
+    MACRO END ( "Error" )
+ENDIF
+FILE EXPORT_FORMATTED_REPORT PDF ( "${workspace_path:h}\PDF Reports\${scan_name:r}.pdf", "On", $report_name )
+
+# If "PDF Reports" folder does not exist, specify folder
+MACRO GET_ERROR_STATUS ( save_dir_found )
+IF $save_dir_found == "Error"
+    DECLARE save_dir
+    MACRO INPUT FOLDER_PATH ( save_dir, "Select location to save reports" , "$workspace_path:h" )
+    IF $save_dir == "0"
+        MACRO ECHO ( "EXIT: No save path provided by user." )
+        MACRO END ( )
+    ENDIF
+    FILE EXPORT_FORMATTED_REPORT PDF ( "${save_dir}\${scan_name:r}.pdf", "On", $report_name )
+ENDIF

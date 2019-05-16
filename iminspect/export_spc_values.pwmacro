@@ -1,0 +1,96 @@
+version "5.0"
+#=======================================================
+# ---- InnovMetric Software Inc.
+# ---- Module  :    PolyWorks|Inspector
+# ---- Version :    2018 IR6 (build 5240)
+# ---- Date    :    Thursday, January 3, 2019 - 11:06:06
+#-------------------------------------------------------
+
+# Created by Kyle Johnston on 2019-01-03
+# Last update: 2019-05-09
+
+# For selected objects, exports SPC (Values) table to "PDF Reports" folder or user specified location if not found
+
+
+# Send SPC values to file instead of active report
+REPORT_ITEM OPTIONS DESTINATION ( "Tree View" )
+
+# Turn on all pieces for Object Control SPC
+REPORT_ITEM TABLE FROM_OBJECT_CONTROL_SPC PIECE_VALUES_ONE_TABLE
+
+
+# Get workspace/project properties
+DECLARE workspace_path
+DECLARE workspace_name
+DECLARE part_number
+DECLARE part_name
+MACRO SHARED_VARIABLE GET_VALUE ( "workspace_path", workspace_path )
+PROJECT PROPERTIES WORKSPACE_FILENAME GET ( workspace_name )
+PROJECT PROPERTIES STANDARD GET ( "Part Number", part_number )
+PROJECT PROPERTIES STANDARD GET ( "Part Name", part_name )
+
+# Create SPC report name, use part number and/or part name or, if not available, the workspace name
+DECLARE part_number_length
+DECLARE part_name_length
+DECLARE spc_name
+MACRO STRING LENGTH GET ( $part_number, part_number_length )
+MACRO STRING LENGTH GET ( $part_name, part_name_length )
+IF $part_number_length > 0
+    IF $part_name_length > 0
+        SET spc_name "${part_number}_${part_name}_SPC_Values"
+    ELSE
+        SET spc_name "${part_number}_SPC_Values"
+    ENDIF
+ELSE
+    IF $part_name_length > 0
+        SET spc_name "${part_name}_SPC_Values"
+    ELSE
+        SET spc_name "${workspace_name:t:r}_SPC_Values"
+    ENDIF
+ENDIF
+
+# Get list of report names
+DECLARE report_names
+TREEVIEW REPORT_ITEM NAME ALL GET ( report_names )
+
+# Get largest index value of report name matching "SPC (Values)"
+DECLARE i 1
+DECLARE is_spc_report
+DECLARE report_index
+DECLARE report_index_max 0
+WHILE $i <= SIZE ( report_names )
+    MACRO STRING FIND_FIRST ( $report_names[$i], "SPC (Values)", 1, is_spc_report )
+    IF $is_spc_report > 0
+        TREEVIEW REPORT_ITEM INDEX GET ( $report_names[$i], report_index )
+        IF $report_index > $report_index_max
+            SET report_index_max $report_index
+        ENDIF
+    ENDIF
+    ++i
+ENDWHILE
+
+# Get report name from previously found largest index
+DECLARE report_name
+TREEVIEW REPORT_ITEM NAME GET ( $report_index_max, report_name )
+
+# Export report
+DECLARE save_dir_found
+FILE EXPORT_REPORT EXCEL_FILE_ONE_ITEM_PER_PAGE ( "${workspace_path:h}\PDF Reports\${spc_name}", 1, , $report_name )
+MACRO GET_ERROR_STATUS ( save_dir_found )
+
+# If "PDF Reports" folder does not exist, specify folder
+IF $save_dir_found == "Error"
+    DECLARE save_dir
+    MACRO INPUT FOLDER_PATH ( save_dir, "Select location to save reports" , "$workspace_path:h" )
+    IF $save_dir == "0"
+        MACRO ECHO ( "EXIT: No save path provided by user." )
+        MACRO END ( )
+    ENDIF
+    FILE EXPORT_REPORT EXCEL_FILE_ONE_ITEM_PER_PAGE ( "${save_dir}\${spc_name}", 1, , $report_name )
+    # If input file name is specificed, PolyWorks will replace the selected sheet number with this table and then save it as a new report (output file name)
+
+    MACRO PAUSE ( "Macro complete", "SPC values have been saved as an Excel file at ${save_dir}\${spc_name}." )
+
+ELSE
+    MACRO PAUSE ( "Macro complete", "SPC values have been saved as an Excel file at ${workspace_path:h}\PDF Reports\${spc_name}." )
+ENDIF

@@ -1,0 +1,37 @@
+version "5.0"
+#========================================================
+# ---- InnovMetric Software Inc.
+# ---- Module  :    PolyWorks|Inspector
+# ---- Version :    2018 IR6 (build 5240)
+# ---- Date    :    Wednesday, January 2, 2019 - 12:50:45
+#--------------------------------------------------------
+
+# Created by Kyle Johnston on 2019-01-23
+# Last update: 2019-01-23
+
+# Makes the characteristic name the same as the current object name for selected objects
+
+
+# Get objects to run macro on
+DECLARE features
+TREEVIEW FEATURE NAME SELECTED GET ( features )
+DECLARE surf_pts
+# TREEVIEW COMPARISON_POINT NAME SELECTED GET ( surf_pts )
+
+
+# Replace text
+
+DECLARE i
+DECLARE j
+DECLARE dims
+
+SET i 1
+WHILE $i <= SIZE ( features )
+    SET j 1
+    TREEVIEW OBJECT PROPERTIES DIMENSION NAME ALL GET ( dims, $features[$i] )
+    WHILE $j <= SIZE ( dims )
+        MEASURE CONTROL CHARACTERISTIC_NAME ( $dims[$j], $features[$i], $features[$i])
+        ++j
+    ENDWHILE
+    ++i
+ENDWHILE

@@ -1,0 +1,90 @@
+version "5.0"
+#========================================================
+# ---- InnovMetric Software Inc.
+# ---- Module  :    PolyWorks|Inspector
+# ---- Version :    2018 IR6 (build 5240)
+# ---- Date    :    Wednesday, January 2, 2019 - 12:50:45
+#--------------------------------------------------------
+
+# Created by Kyle Johnston on 2019-04-09
+# Last update: 2019-04-18
+
+# Replaces names in input with output for selected objects
+
+
+# Get text to find and replace from user directly editing this macro
+DECLARE inputs { "" }
+
+DECLARE outputs { "" }
+
+MACRO ECHO ( SIZE (inputs) )
+MACRO ECHO ( SIZE (outputs) )
+IF SIZE ( inputs ) != SIZE ( outputs )
+    MACRO ECHO ( "Inputs and outputs must have the same size." )
+    MACRO END ( )
+ENDIF
+
+# Get objects to run find and replace on
+DECLARE features
+TREEVIEW FEATURE NAME SELECTED GET ( features )
+DECLARE surf_pts
+TREEVIEW COMPARISON_POINT NAME SELECTED GET ( surf_pts )
+DECLARE groups
+TREEVIEW OBJECT_GROUP NAME SELECTED GET ( groups )
+DECLARE custom
+TREEVIEW CUSTOM_MEASUREMENT NAME SELECTED GET ( custom )
+
+
+# Replace text
+
+DECLARE j 1
+DECLARE k 0
+DECLARE i
+DECLARE index
+DECLARE new_name
+
+WHILE $j <= SIZE ( inputs )
+
+    SET i 1
+    WHILE $i <= SIZE ( features )
+        IF $features[$i] == $inputs[$j]
+            TREEVIEW FEATURE INDEX GET ( $features[$i], index )
+            TREEVIEW FEATURE NAME ( $index, $outputs[$j] )
+            ++k
+        ENDIF
+        ++i
+    ENDWHILE
+
+    SET i 1
+    WHILE $i <= SIZE ( surf_pts )
+        IF $surf_pts[$i] == $inputs[$j]
+            TREEVIEW COMPARISON_POINT INDEX GET ( $surf_pts[$i], index )
+            TREEVIEW COMPARISON_POINT NAME ( $index, $outputs[$j] )
+            ++k
+        ENDIF
+        ++i
+    ENDWHILE
+
+    SET i 1
+    WHILE $i <= SIZE ( groups )
+        IF $groups[$i] == $inputs[$j]
+            TREEVIEW OBJECT_GROUP PROPERTIES NAME ( $outputs[$j], $groups[$i] )
+            ++k
+        ENDIF
+        ++i
+    ENDWHILE
+
+    SET i 1
+    WHILE $i <= SIZE ( custom )
+        IF $custom[$i] == $inputs[$j]
+            TREEVIEW CUSTOM_MEASUREMENT INDEX GET ( $custom[$i], index )
+            TREEVIEW CUSTOM_MEASUREMENT NAME ( $index, $outputs[$j] )
+            ++k
+        ENDIF
+        ++i
+    ENDWHILE
+
+    ++j
+ENDWHILE
+
+MACRO ECHO ( "Renamed ${k} features" )

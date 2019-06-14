@@ -7,25 +7,38 @@ version "5.0"
 #-------------------------------------------------------
 
 # Created by Kyle Johnston on 2019-03-27
-# Last update: 2019-04-16
+# Last update: 2019-06-14
 
 # Creates feature from 2 other features repetitively
 
-# Example of alternating
-# 01.1-1 (selected)
-# 01.1-2 (selected)
-# 01.2-1 (selected)
-# 01.2-2 (selected)
-# 01.3-1 (selected)
-# 01.3-2 (selected, optional)
+# Example of alternating (create measurement between 1a and 1b, etc.)
+# 1a (selected)
+# 1b (selected)
+# 2a (selected)
+# 2b (selected)
+# 3a (selected)
+# 3b (selected, optional)
 
-# Example of not alternating
-# 01.1-1 (selected)
-# 01.2-1 (selected)
-# 01.3-1 (selected)
-# 01.1-2
-# 01.2-2
-# 01.3-2
+# Example of not alternating (create measurement between 1a and 1b, etc.)
+# 1a (selected)
+# 2a (selected)
+# 3a (selected)
+# 1b
+# 2b
+# 3b
+
+# To create distance features between one reference feature and multiple other features, do the following:
+# 1. Duplicate all the features to be measured to.
+# 2. Move the duplicated features to just before the originals and keep the duplicates selected. Tree view should look like this:
+# 1b (2) (selected)
+# 2b (2) (selected)
+# 3b (2) (selected)
+# 1b
+# 2b
+# 3b
+#
+# 3. Run this macro.
+# 4. Select all the distance features created by the macro. Right-click and select properties. Change the reference feature to the feature you want.
 
 
 # Get when to start (index1) and stop (index2) from selected features
@@ -62,20 +75,20 @@ DECLARE bot_name
 WHILE $i <= $index2
     TREEVIEW FEATURE NAME GET ( EXPR ($i), top_name )
     TREEVIEW FEATURE NAME GET ( EXPR ($i+$feature_increment), bot_name )
-
+    
 	IF $type == "d"
         # Create distance feature
         FEATURE DISTANCE CREATE ( $bot_name, $top_name, "$top_name - dist" )
-
+        
     ELSEIF $type == "p"
 	    # Create average point feature
     	TREEVIEW OBJECT SELECT NONE
 	    TREEVIEW FEATURE SELECT ( $i, "On" )
     	TREEVIEW FEATURE SELECT ( EXPR ($i+$feature_increment), "On" )
 	    FEATURE PRIMITIVE POINT FROM_POINTS ( "$top_name - avg", )
-
+        
     ENDIF
-
+    
     # Increment i
     SET i EXPR ( $i+$set_increment )
 ENDWHILE

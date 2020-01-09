@@ -7,7 +7,7 @@ version "5.0"
 #--------------------------------------------------------
 
 # Created by Kyle Johnston on 2019-01-07
-# Last update: 2019-04-04
+# Last update: 2019-08-30
 
 # Replaces text in selected objects for features, surface points, groups, and custom measurements
 
@@ -44,7 +44,10 @@ WHILE $i <= SIZE ( features )
     TREEVIEW FEATURE INDEX GET ( $features[$i], index )
     MACRO STRING REPLACE ( $features[$i], $find_text, $replace_text, 1, , new_name )
     TREEVIEW FEATURE NAME ( $index, $new_name )
-    ++i
+    IF $new_name != 0 THEN
+        TREEVIEW FEATURE NAME ( $index, $new_name )
+        ++i
+    ENDIF
 ENDWHILE
 
 SET i 1
@@ -52,7 +55,10 @@ WHILE $i <= SIZE ( surf_pts )
     TREEVIEW COMPARISON_POINT INDEX GET ( $surf_pts[$i], index )
     MACRO STRING REPLACE ( $surf_pts[$i], $find_text, $replace_text, 1, , new_name )
     TREEVIEW COMPARISON_POINT NAME ( $index, $new_name )
-    ++i
+    IF $new_name != 0 THEN
+        TREEVIEW COMPARISON_POINT NAME ( $index, $new_name )
+        ++i
+    ENDIF
 ENDWHILE
 
 SET i 1

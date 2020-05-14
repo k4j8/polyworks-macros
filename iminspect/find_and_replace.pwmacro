@@ -43,7 +43,6 @@ SET i 1
 WHILE $i <= SIZE ( features )
     TREEVIEW FEATURE INDEX GET ( $features[$i], index )
     MACRO STRING REPLACE ( $features[$i], $find_text, $replace_text, 1, , new_name )
-    TREEVIEW FEATURE NAME ( $index, $new_name )
     IF $new_name != 0 THEN
         TREEVIEW FEATURE NAME ( $index, $new_name )
         ++i
@@ -54,7 +53,6 @@ SET i 1
 WHILE $i <= SIZE ( surf_pts )
     TREEVIEW COMPARISON_POINT INDEX GET ( $surf_pts[$i], index )
     MACRO STRING REPLACE ( $surf_pts[$i], $find_text, $replace_text, 1, , new_name )
-    TREEVIEW COMPARISON_POINT NAME ( $index, $new_name )
     IF $new_name != 0 THEN
         TREEVIEW COMPARISON_POINT NAME ( $index, $new_name )
         ++i

@@ -7,7 +7,7 @@ version "5.0"
 #--------------------------------------------------------
 
 # Created by Kyle Johnston on 2018-08-15
-# Last update: 2019-05-15
+# Last update: 2019-11-08
 
 # Sets piece properties
 
@@ -33,15 +33,19 @@ ENDIF
 # Acquire info from user
 DECLARE part_number
 DECLARE part_name
+DECLARE cavity_number
+DECLARE piece_number
 DECLARE device
 MACRO INPUT MULTIPLE_PARAMETERS ( "Piece properties", "Enter piece properties", \
     {"string", "Part number", "", \
     "string", "Part name", "", \
+    "string", "Cavity/fixture number", "", \
+    "string", "Piece number", "", \
     "string", "Device used", "", \
     "string", "User organization", $user_org, \
     "string", "User name", $user_name, \
     "string", "User email", $user_email}, \
-    part_number, part_name, device, user_org, user_name, user_email )
+    part_number, part_name, cavity_number, piece_number, device, user_org, user_name, user_email )
 
 # If input is cancelled, end macro
 IF $part_number == ""
@@ -79,10 +83,12 @@ TREEVIEW OBJECT PROPERTIES DISPLAY COLOR ( 255, 153, 0, )
 MACRO PAUSE ( "Marco complete", \
     "For this project:", \
     "Organization --> ${user_org}", \
-    "Part number --> ${part_number}", \
+    "Part number --> ${part_number:u}", \
     "Part name --> ${part_name}", \
     "", \
     "For this piece:", \
+    "Piece Name --> ${piece_name}", \
     "Operator Name --> ${user_name}", \
     "E-Mail Address --> ${user_email}", \
-    "Device --> ${device}" )
+    "Device --> ${device}", \
+    "Cavity/Fixture --> ${cavity_number}")

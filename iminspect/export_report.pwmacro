@@ -6,9 +6,6 @@ version "5.0"
 # ---- Date    :    Thursday, December 20, 2018 - 10:42:22
 #---------------------------------------------------------
 
-# Created by Kyle Johnston on 2018-12-20
-# Last update: 2019-05-09
-
 # Exports report to "PDF Reports" folder or user specified location if not found
 
 

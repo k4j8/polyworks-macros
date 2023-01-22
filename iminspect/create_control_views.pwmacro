@@ -6,9 +6,6 @@ version "5.0"
 # ---- Date    :    Monday, February 25, 2019 - 10:27:25
 #-------------------------------------------------------
 
-# Created by Kyle Johnston on 2019-02-25
-# Last update: 2019-04-30
-
 # Create snapshot and table (control view) for all control views and name the resulting snapshot and table by the control view's name
 
 

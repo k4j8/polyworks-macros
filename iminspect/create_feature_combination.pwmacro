@@ -6,9 +6,6 @@ version "5.0"
 # ---- Date    :    Wednesday, March 27, 2019 - 17:02:47
 #-------------------------------------------------------
 
-# Created by Kyle Johnston on 2019-03-27
-# Last update: 2019-06-14
-
 # Creates feature from 2 other features repetitively
 
 # Example of alternating (create measurement between 1a and 1b, etc.)
@@ -75,20 +72,20 @@ DECLARE bot_name
 WHILE $i <= $index2
     TREEVIEW FEATURE NAME GET ( EXPR ($i), top_name )
     TREEVIEW FEATURE NAME GET ( EXPR ($i+$feature_increment), bot_name )
-    
+
 	IF $type == "d"
         # Create distance feature
         FEATURE DISTANCE CREATE ( $bot_name, $top_name, "$top_name - dist" )
-        
+
     ELSEIF $type == "p"
 	    # Create average point feature
     	TREEVIEW OBJECT SELECT NONE
 	    TREEVIEW FEATURE SELECT ( $i, "On" )
     	TREEVIEW FEATURE SELECT ( EXPR ($i+$feature_increment), "On" )
 	    FEATURE PRIMITIVE POINT FROM_POINTS ( "$top_name - avg", )
-        
+
     ENDIF
-    
+
     # Increment i
     SET i EXPR ( $i+$set_increment )
 ENDWHILE

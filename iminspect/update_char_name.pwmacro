@@ -6,9 +6,6 @@ version "5.0"
 # ---- Date    :    Wednesday, January 2, 2019 - 12:50:45
 #--------------------------------------------------------
 
-# Created by Kyle Johnston on 2019-01-23
-# Last update: 2019-01-23
-
 # Makes the characteristic name the same as the current object name for selected objects
 
 
